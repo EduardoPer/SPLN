@@ -10,4 +10,6 @@ Escrever um filtro que apaga linhas duplicadas de um ficheiro, em que o output p
 
 
 ## Comando
+```bash
 python3 tpc1.py <ficheiro de entrada> (<ficheiro de saída>)?
+```
