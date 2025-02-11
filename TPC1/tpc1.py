@@ -1,26 +1,26 @@
 import sys
 
-lineCounter = False
+files = []
+opts = []
 
-if sys.argv.__len__() == 2:
-    fileIn = sys.argv[1]
-elif sys.argv.__len__() == 3:
-    if "-c" in sys.argv:
-        lineCounter = True
-        fileIn = sys.argv[1]
-    else:
-        fileIn = sys.argv[1]
-        fileOut = sys.argv[2]
-elif sys.argv.__len__() == 4:
-    if "-c" in sys.argv:
-        lineCounter = True
-    fileIn = sys.argv[1]
-    fileOut = sys.argv[2]
+if sys.argv.__len__() >= 2:
+    for arg in sys.argv:
+        if arg[0] == "-":
+            opts.append(arg)
+        else:
+            files.append(arg)
+    
+    if len(files) > 3:
+        print("Invalid number of arguments     .")
+        sys.exit()
+    elif len(files) < 2:
+        print("    Invalid number of arguments.")
+        sys.exit()
 else:
     print("Invalid number of arguments.")
     sys.exit()
     
-f = open(fileIn, "r")
+f = open(files[1], "r")
 fl = f.readlines()
 f.close()
 
@@ -33,7 +33,7 @@ for i in range(0, fl.__len__()):
         res[fl[i]] = [i]
     
 
-if lineCounter:
+if "-c" in opts:
     print("----------------------------------------")
     for key, lineNrs in res.items():
         nrs = ""
@@ -43,8 +43,8 @@ if lineCounter:
         print("in the lines " + nrs)
         print("----------------------------------------")
 
-if (sys.argv.__len__() == 3 and "-c" not in sys.argv) or (sys.argv.__len__() == 4):
-    f = open(fileOut, "w")
+if len(files) > 2:
+    f = open(files[2], "w")
     for l in res.keys():
         f.write(l + "\n")
     f.close()
