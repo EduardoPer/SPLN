@@ -1,8 +1,19 @@
 import sys
 
+lineCounter = False
+
 if sys.argv.__len__() == 2:
     fileIn = sys.argv[1]
 elif sys.argv.__len__() == 3:
+    if "-c" in sys.argv:
+        lineCounter = True
+        fileIn = sys.argv[1]
+    else:
+        fileIn = sys.argv[1]
+        fileOut = sys.argv[2]
+elif sys.argv.__len__() == 4:
+    if "-c" in sys.argv:
+        lineCounter = True
     fileIn = sys.argv[1]
     fileOut = sys.argv[2]
 else:
@@ -21,16 +32,18 @@ for i in range(0, fl.__len__()):
     else:
         res[fl[i]] = [i]
     
-print("----------------------------------------")
-for key, lineNrs in res.items():
-    nrs = ""
-    for ln in lineNrs:
-        nrs += (", " if nrs != "" else "") + str(ln)
-    print("The word '" + key + "' was written " + str(len(lineNrs)) + " time" + ("s" if (len(lineNrs) > 1) or (len(lineNrs) == 0) else ""))
-    print("in the lines " + nrs)
+
+if lineCounter:
     print("----------------------------------------")
-    
-if sys.argv.__len__() == 3:
+    for key, lineNrs in res.items():
+        nrs = ""
+        for ln in lineNrs:
+            nrs += (", " if nrs != "" else "") + str(ln)
+        print("The word '" + key + "' was written " + str(len(lineNrs)) + " time" + ("s" if (len(lineNrs) > 1) or (len(lineNrs) == 0) else ""))
+        print("in the lines " + nrs)
+        print("----------------------------------------")
+
+if (sys.argv.__len__() == 3 and "-c" not in sys.argv) or (sys.argv.__len__() == 4):
     f = open(fileOut, "w")
     for l in res.keys():
         f.write(l + "\n")
