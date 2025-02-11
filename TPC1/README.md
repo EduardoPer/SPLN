@@ -10,6 +10,12 @@ Escrever um filtro que apaga linhas duplicadas de um ficheiro, em que o output p
 
 
 ## Comando
+- (adicionar "-c" para obter linhas e número de repetições)
+### Output para um ficheiro
 ```bash
-python3 tpc1.py <ficheiro de entrada> (<ficheiro de saída>)?
+python3 tpc1.py <ficheiro de entrada> <ficheiro de saída>
+```
+### Output para STDOUT
+```bash
+python3 tpc1.py <ficheiro de entrada>
 ```
