@@ -9,6 +9,9 @@ Options
     -s      keep spaces
     -e      remove empty lines
     -p "str"  comment duplicate lines with str instead of removing them
+    -m "str"  comment empty lines
+    -o filename output the results in file "filename"
+    -c print the phrases' number of repetitions and lines in STDOUT
 '''
 from jjcli import *
 import sys
