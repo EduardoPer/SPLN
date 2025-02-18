@@ -3,15 +3,16 @@
 Repetidas - Remove linhas repetidas de um programa.
 
 Usage - 
-    repetidas options file*
+    ./tpc2.py options file*
+    python3 tpc2.py options file*
 
-Options
-    -s      keep spaces
-    -e      remove empty lines
-    -p "str"  comment duplicate lines with str instead of removing them
-    -m "str"  comment empty lines
-    -o filename output the results in file "filename"
-    -c print the phrases' number of repetitions and lines in STDOUT
+Options - 
+    -s              keep spaces
+    -e              remove empty lines
+    -p STR          comment duplicate lines with STR instead of removing them
+    -m STR          comment empty lines with STR
+    -o FILENAME     output the results in file named FILENAME
+    -c              print the phrases' number of repetitions and lines in STDOUT
 '''
 from jjcli import *
 import sys
@@ -53,7 +54,7 @@ def remove_linhas_repetidas(cl):
                 print(ln)
         lcount += 1
         
-if __name__ == "__main__":
+def main():
     cl = clfilter(opt="sep:o:cm:", man=__doc__)
     
     if "-e" in cl.opt and "-m" in cl.opt:
@@ -79,4 +80,7 @@ if __name__ == "__main__":
             print("The phrase '" + key + "' was written " + str(len(lineNrs)) + " time" + ("s" if (len(lineNrs) > 1) or (len(lineNrs) == 0) else ""))
             print("in the lines " + nrs)
             print("----------------------------------------")
+        
+if __name__ == "__main__":
+    main()
     
