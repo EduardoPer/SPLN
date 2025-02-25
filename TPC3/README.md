@@ -4,12 +4,17 @@
 Completar um script que calcula frequências de tokens num texto
 
 ## Funcionalidades
-- Calcular frequência absoluta de tokens em texto por STDIN
-- Calcular frequência absoluta de tokens em texto, dados um ou mais ficheiros
+- Calcular frequência absoluta e/ou relativa de tokens em texto por STDIN
+- Calcular frequência absoluta e/ou relativa de tokens em texto, dados um ou mais ficheiros
 - Somar as frequências de tokens quando são dados vários ficheiros
 
 
 ## Comando
+### Flags
+- **"-a"**: frequências absolutas
+- **"-m N"**: Limitar o output a N entradas
+- **"-j FILENAME"**: criar um ficheiro Json com nome FILENAME que contém o counter unificado de todos os ficheiros
+- **"-f"**: separar o output por ficheiros, dividindo em cada ficheiro por palavras e pontuação
 
 ### Instalar a ferramenta (dentro da pasta TPC3)
 ```bash
@@ -21,17 +26,12 @@ pip install .
 pip uninstall ftk
 ```
 
-### Calcular frequências absolutas no STDIN
+### Calcular frequências no STDIN
 ```bash
 ftk-occ
 ```
 
-### Calcular frequências absolutas em ficheiros
+### Calcular frequências em ficheiros
 ```bash
-ftk-occ [files]
-```
-
-### Calcular a soma das frequências absolutas em ficheiros
-```bash
-ftk-occ [files] -a
+ftk-occ [files] [opts]
 ```
