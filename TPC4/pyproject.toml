@@ -8,6 +8,7 @@ license={text="MIT"}
 
 [project.scripts]
 ftk-occ="ftk.base:main"
+ftk-ratio-corpus="ftk.base:main_corpus"
 
 [build-system]
 requires = ["hatchling"]

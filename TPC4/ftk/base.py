@@ -2,9 +2,9 @@ import re
 import jjcli
 import collections
 import json
+from datetime import datetime
 
 def lexer(txt):
-    # FIXME patterns, stopwords, lems
     return re.findall(r'(\w+(?:\-\w+)*)|([^\w\s])', txt)
 
 def counter(tokens):
@@ -12,24 +12,30 @@ def counter(tokens):
 
 def freqs(cl, all : collections.Counter, allp : collections.Counter, counters : list[collections.Counter], countersp : list[collections.Counter]):
     """
-    -f              rel and abs freqs per file, separated by words and punctuation
-    -a              abs freq
-    -m 700          max 700 entries
-    -j "filename"   one counter of all files tokens to a Json file named "filename"
+    -f                  rel and abs freqs per file, separated by words and punctuation
+    -a                  abs freq
+    -m 700              max 700 entries
+    -j "filename"       one counter of all files tokens to a Json file named "filename"
+    -r corpus_filename  ratio with corpus_filename
     """
     
     all_allp = collections.Counter(dict((all + allp).most_common()))
     total_tokens = sum(all_allp.values())
     all_allp_filtered = dict(collections.Counter({k: v for k, v in all_allp.items() if v > 2}).most_common())
+    all_allp_filtered_rel = dict(collections.Counter({k: (v/total_tokens) * 1000000 for k, v in all_allp.items() if v > 2}).most_common())
     m = 0
     
     if "-m" in cl.opt:
         m = int(cl.opt.get("-m"))
-        
-    if "-j" in cl.opt:
+    
+    elif "-j" in cl.opt and "-a" in cl.opt:
         filename = cl.opt.get("-j")
         with open(filename, "w", encoding="utf-8") as f:
             f.write(json.dumps(all_allp_filtered, ensure_ascii=False, indent=4))
+    elif "-j" in cl.opt:
+        filename = cl.opt.get("-j")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(json.dumps(all_allp_filtered_rel, ensure_ascii=False, indent=4))
         
     elif "-a" in cl.opt and "-f" in cl.opt:
         for i in range(0, len(cl.args)):
@@ -127,12 +133,55 @@ def occurs_stdin(cl):
         print("~Words:")
         for (k, v) in cpun.items():
                 print("\t\t" + str(k) + ": fa=" + str(v) + " ; fr=" + str(float(v/total_tokens)*1000000))
+    
+def ratio(cInput, cBase):
+    ratio_dict = {}
+    for k, v in cInput.items():
+        ratio_dict[k] = v / cBase[k] if cBase.get(k) else 0
+    return dict(collections.Counter(ratio_dict).most_common())
+
+def corpus_to_dict(filename):
+    corpus_dict = {}
+    with open(filename, "r", encoding='utf-8') as f:
+        text = f.read()
+        tokens = re.findall(r'(\d+)\s+(.*)\n', text)
+        for (v, k) in tokens:
+            v = float(v)
+            if v > 2:
+                corpus_dict[k] = v
+                
+    return dict(collections.Counter(corpus_dict).most_common())
+
+    
 
 def main():
-    cl = jjcli.clfilter(opt="afm:j:", man=__doc__)
+    cl = jjcli.clfilter(opt="afm:j:r", man=__doc__)
     
     if len(cl.args) == 0:
-        occurs_stdin(cl)
+         occurs_stdin(cl)
     else:
         all, allp, counters, countersp = occurs_files(cl)
         freqs(cl, all, allp, counters, countersp)
+        
+def main_corpus():
+    cl = jjcli.clfilter(opt="c:o:s:", man=__doc__)
+    """
+    -c corpus    corpus file with structure per line being 'Nocorr word'
+    -o FILENAME  output ratio in json format to file FILENAME
+    -s N         print the N words that are surprises
+    """
+    if "-c" in cl.opt:
+        all, allp, _, _ = occurs_files(cl)
+        all_allp = collections.Counter(dict((all + allp).most_common()))
+        total_tokens = sum(all_allp.values())
+        all_allp_filtered_rel = dict(collections.Counter({k: (v/total_tokens) * 1000000 for k, v in all_allp.items() if v > 2}).most_common())
+        corpus_dict = corpus_to_dict(cl.opt.get("-c"))
+        ratio_dict = ratio(all_allp_filtered_rel, corpus_dict)
+        if "-o" in cl.opt:
+            with open(cl.opt.get("-o"), "w", encoding="utf-8") as f:
+                json.dump(ratio_dict, f, ensure_ascii=False, indent=4)
+        else:
+            with open(f"{datetime.now().timestamp()}.json", "w", encoding="utf-8") as f:
+                json.dump(ratio_dict, f, ensure_ascii=False, indent=4)
+        if "-s" in cl.opt:
+            print(dict(collections.Counter(ratio_dict).most_common(int(cl.opt.get("-s")))))
